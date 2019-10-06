@@ -152,30 +152,35 @@ func getConfigs() configs {
 
 func getTime(args interface{}) time.Duration {
 	// default
-	frequency := time.Minute
+	frequency := time.Hour
 	if args, ok := args.([]string); ok {
+		selection := strings.ToLower(args[0])
 		if len(args) > 0 {
-			switch strings.ToLower(args[0]) {
+			switch selection {
+			case "minute":
+				frequency := time.Minute
+				return frequency
+			case "quarter-hour":
+				frequency := time.Minute * 15
+				return frequency
+			case "half-hour":
+				frequency := time.Minute * 30
+				return frequency
+			case "three-quarter-hour":
+				frequency := time.Minute * 45
+				return frequency
 			case "hour":
 				frequency := time.Hour
 				return frequency
 			case "day":
 				frequency := time.Hour * 24
 				return frequency
-			case "half-hour":
-				frequency := time.Minute * 30
-				return frequency
-			case "quarter-hour":
-				frequency := time.Minute * 15
-				return frequency
-			case "three-quarter-hour":
-				frequency := time.Minute * 45
-				return frequency
-			case "minute":
-				frequency := time.Minute
-				return frequency
 			default:
-				frequency := time.Minute
+				frequency, err := time.ParseDuration(selection)
+				if err != nil {
+					log.Printf("Could not parse the provided time interval: %s. Setting inteval to one hour.\n", err.Error())
+					return time.Hour
+				}
 				return frequency
 			}
 		}
