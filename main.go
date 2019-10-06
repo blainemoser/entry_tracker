@@ -95,7 +95,11 @@ func (r *record) save(db *sql.DB) {
 	if err != nil {
 		panic("Error in `func (r *record) save(db *sql.DB)` insert: " + err.Error())
 	}
-	fmt.Println(insert)
+	lastInsertID, err := insert.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Printf("Created Record No. %d\n", lastInsertID)
 	return
 }
 
