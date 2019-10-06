@@ -38,11 +38,25 @@ func checkFatalErr(err error) {
 }
 
 func checkConfigs(configs configs) {
-	var expects = map[string]string{"username": "username", "password": "password", "port": "port", "driver": "driver", "host": "host", "database": "database", "table": "table"}
+	var expects = map[string]string{
+		"username": "username",
+		"password": "password",
+		"port":     "port",
+		"driver":   "driver",
+		"host":     "host",
+		"database": "database",
+		"table":    "table",
+	}
 	expectsCount := len(expects)
 	countParams := 0
 	for key, _ := range configs.databaseConfigs {
-		if key == "username" || key == "password" || key == "port" || key == "driver" || key == "host" || key == "database" || key == "table" {
+		if key == "username" ||
+			key == "password" ||
+			key == "port" ||
+			key == "driver" ||
+			key == "host" ||
+			key == "database" ||
+			key == "table" {
 			delete(expects, key)
 			countParams++
 		}
