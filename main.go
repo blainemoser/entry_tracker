@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -11,11 +12,43 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Debugging function
+func dd(v interface{}) {
+	fmt.Println(v)
+	os.Exit(0)
+}
+
 // Checks whether a fatal error has been encountered
 func checkFatalErr(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func checkConfigs(configs configs) bool {
+	var expects = map[string]string{"username": "username", "password": "password", "port": "port", "driver": "driver", "host": "host", "database": "database"}
+	expectsCount := len(expects)
+	countParams := 0
+	for key, _ := range configs.databaseConfigs {
+		if key == "username" || key == "password" || key == "port" || key == "driver" || key == "host" || key == "database" {
+			delete(expects, key)
+			countParams++
+		}
+	}
+
+	if countParams != expectsCount {
+		// Report on the missing configs
+		missing := ""
+		for _, j := range expects {
+			if missing != "" {
+				missing += "; " + j
+			} else {
+				missing += j
+			}
+		}
+		panic("Missing database configs: " + missing)
+	}
+	return true
 }
 
 type configs struct {
@@ -65,6 +98,8 @@ func getConfigs() configs {
 		log.Fatal(err)
 	}
 
+	checkConfigs(result)
+
 	return result
 }
 
@@ -74,7 +109,15 @@ func main() {
 	// checkFatalErr(err)
 
 	configs := getConfigs()
-	fmt.Println(configs)
+	dbConfigs := configs.databaseConfigs
+	// urls := configs.urls
+
+	// connect to database
+	db, err := sql.Open(dbConfigs["driver"], dbConfigs["username"]+":"+dbConfigs["password"]+"@tcp("+dbConfigs["host"]+":"+dbConfigs["port"]+")/"+dbConfigs["database"])
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	// Run an indefinite update loop
 	for now := range time.Tick(time.Minute) {
