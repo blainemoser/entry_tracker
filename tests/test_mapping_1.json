@@ -1,0 +1,5 @@
+{
+    "url": "https://blockchain.info/ticker",
+    "table": "temp_testing_table",
+    "test_property": "USD/buy"
+}

@@ -1,0 +1,5 @@
+{
+    "url": "https://api.coindesk.com/v1/bpi/currentprice/ZAR.json",
+    "table": "temp_testing_table",
+    "test_property": "bpi/USD/rate"
+}

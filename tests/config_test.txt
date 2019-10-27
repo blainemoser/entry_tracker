@@ -1,0 +1,11 @@
+host: localhost     #here is a comment
+username: uname
+password: pword 
+port: 3306
+#this line should not be included in the test result
+database: dbase
+driver: mysql 
+
+# These are the URLs to which we will connect
+file: tests/test_mapping_1.json
+file: tests/test_mapping_2.json

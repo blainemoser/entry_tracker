@@ -1,0 +1,10 @@
+host: localhost     # database host
+username: uname     # database username
+password: pword     # database password
+port: 3306
+database: dbase     # name of the database
+driver: mysql 
+
+# List of mapping files. The json must contain a property "url" (containing the api URL) and "table" (the name of the table to which the data will be saved)
+file: tests/test_mapping_1.json
+file: tests/test_mapping_2.json
