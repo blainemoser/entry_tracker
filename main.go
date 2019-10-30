@@ -322,6 +322,26 @@ func fetchAndSave(nextURL string, database string, db *sql.DB) {
 	return
 }
 
+func retrieve(now time.Time) {
+	configs := getConfigs("config.txt")
+	dbConfigs := configs.databaseConfigs
+	urls := configs.urls
+	db := openDb(dbConfigs)
+	defer db.Close()
+
+	// Each tick, connect to the URLS specified and save the records to the database
+	fmt.Println(now)
+	for _, url := range urls {
+		wg.Add(1)
+		go func(nextURL string, database string, db *sql.DB) {
+			defer catchWgAndPanic()
+			fetchAndSave(nextURL, database, db)
+			return
+		}(url, dbConfigs["database"], db)
+	}
+	wg.Wait()
+}
+
 func main() {
 	// Find configs in the provided config file
 	args := os.Args[1:]
@@ -331,23 +351,6 @@ func main() {
 
 	// Run an indefinite update loop
 	for now := range time.Tick(getTime(args)) {
-
-		configs := getConfigs("config.txt")
-		dbConfigs := configs.databaseConfigs
-		urls := configs.urls
-		db := openDb(dbConfigs)
-		defer db.Close()
-
-		// Each tick, connect to the URLS specified and save the records to the database
-		fmt.Println(now)
-		for _, url := range urls {
-			wg.Add(1)
-			go func(nextURL string, database string, db *sql.DB) {
-				defer catchWgAndPanic()
-				fetchAndSave(nextURL, database, db)
-				return
-			}(url, dbConfigs["database"], db)
-		}
-		wg.Wait()
+		retrieve(now)
 	}
 }
